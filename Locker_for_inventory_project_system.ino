@@ -1,6 +1,6 @@
 #include <Wire.h>
 
-//LCD SECTIOM
+//LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
 
@@ -8,6 +8,10 @@ const int colorR = 255;
 const int colorG = 0;
 const int colorB = 0;
 
+//SERVO MOTOR SECTION
+//https://projecthub.arduino.cc/arduino_uno_guy/the-beginners-guide-to-micro-servos-ae2a30
+#include <Servo.h>
+Servo servo;
 
 //KEYPAD SECTION 
 //https://www.circuitbasics.com/how-to-set-up-a-keypad-on-an-arduino/
@@ -40,6 +44,8 @@ Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS)
 
 void setup() 
 {
+  servo.attach(10);
+  servo.write(0);
   pin_pad_setup();
   lcd_setup();
   delay(1000);
@@ -83,6 +89,7 @@ void loop()
         if(password_correct)
         {
           lcd.print("Password correct");
+          servo.write(180);
           delay(300);
         }
         else if(!password_correct)
@@ -99,7 +106,15 @@ void loop()
     
 
     delay(200);
+
 }
+
+
+
+
+
+
+
 
 
 

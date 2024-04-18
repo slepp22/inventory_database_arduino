@@ -39,9 +39,6 @@ rgb_lcd lcd;          //PIN I2C
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 
-
-
-
 void setup() 
 {
   servo.attach(10);
@@ -62,24 +59,48 @@ void lcd_setup()
     lcd.setRGB(colorR, colorG, colorB);
 }
 
+bool get_booking()
+{
+  //TODO CALL TO BACKEND
+  
+  delay(300);
+  bool booking = false;
+  return booking;
+}
+
+void open_locker()
+{
+  //TODO finish implemeting
+  servo.write(180);
+}
+
 
 void loop() 
 {
-    // set the cursor to column 0, line 1
-    // (note: line 1 is the second row, since counting begins with 0):
+  bool wait_for_booking = true;
+  while(wait_for_booking)
+  {
     lcd.setCursor(0, 0);
     // print the number of seconds since reset:
-    lcd.print("Enter password");
+    lcd.clear();
+    lcd.print("Waiting for booking");
+    wait_for_booking = get_booking();
+    delay(300);
+  }
 
-    lcd.setCursor(0,1);
 
-    
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Enter password");
+  lcd.setCursor(0,1);
 
+  int counter_password_entries = 0;
+  bool wait_for_user_input = true;
+    while(wait_for_user_input)
+  {
     char custom_key = customKeypad.getKey();
-
     bool password_correct = false;
-  
-  
+    
     if (custom_key){
 
       if(custom_key == '*')
@@ -89,34 +110,42 @@ void loop()
         if(password_correct)
         {
           lcd.print("Password correct");
-          servo.write(180);
-          delay(300);
+          open_locker();
+          delay(200);
+          lcd.clear();
+          open_locker();
+          lcd.print("Get your item");
+          delay(200);
+          wait_for_user_input = false;
         }
         else if(!password_correct)
         {
-          lcd.print("password wrong");
+          counter_password_entries += 1;
 
+          lcd.print("password wrong");
+          lcd.clear();
+          lcd.print("try again ");
+          lcd.print(String(counter_password_entries)); // Convert integer to string
+          lcd.print("/3");
+          lcd.setCursor(0,1);
+          input_password =""; //reset password entry
+
+          if(counter_password_entries == 3)
+          {
+            lcd.clear();
+            lcd.print("Password wrong to many times");
+            delay(300);
+            wait_for_user_input=false;
+          }
+          
         }
       }
-
-  
+      if(custom_key != '*')
+      {
       input_password += custom_key;
-      lcd.print(input_password);
+      lcd.print(custom_key);
+      }
     }
-    
-
+  }
     delay(200);
-
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,8 @@
 # Inventory Database Part : Arduino
+<div style="float: right">
+  <img src="https://github.com/slepp22/inventory_database_arduino/blob/main/logo.png?raw=true" alt="Logo" />
+</div>
+
 ## Introduction
 
 This project is a collaboration between Centria and Hochschule Darmstadt to develop 

@@ -32,31 +32,42 @@ String input_password ="";
 byte rowPins[ROWS] = {9, 8, 7, 6}; 
 byte colPins[COLS] = {5, 4, 3, 2}; 
 
+//DOOR SENSOR
+//https://arduinogetstarted.com/tutorials/arduino-door-sensor
 
 
 //PINS
 rgb_lcd lcd;          //PIN I2C
+const int DOOR_SENSOR_PIN = 13;
+const int SENSOR_MOTOR_PIN = 10;
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
+
 
 
 void setup() 
 {
-  servo.attach(10);
-  servo.write(0);
+  door_sensor_setup();
+  servo_motor_setup();
   pin_pad_setup();
   lcd_setup();
   delay(1000);
 }
 
-void pin_pad_setup()
-{
-  Serial.begin(9600);
-}
+
+void door_sensor_setup(){pinMode(DOOR_SENSOR_PIN, INPUT_PULLUP); }
+
+void pin_pad_setup(){Serial.begin(9600);}
 
 void lcd_setup()
 {
-    lcd.begin(16, 2);
+    lcd.begin(16, 2);//Colums and rows to dedicated LED Screen
     lcd.setRGB(colorR, colorG, colorB);
+}
+
+void servo_motor_setup()
+{
+  servo.attach(SENSOR_MOTOR_PIN);
+  servo.write(0);
 }
 
 bool get_booking()
@@ -77,6 +88,20 @@ void open_locker()
 
 void loop() 
 {
+  /* TODO: implment it to the rest
+  int doorState = digitalRead(13); // read state
+
+  if (doorState == HIGH) {
+    lcd.clear();
+    lcd.print("The door is open");
+    delay(100);
+  } else {
+    lcd.clear();
+    lcd.print("The door is closed");
+    delay(100);
+  }
+  */
+
   bool wait_for_booking = true;
   while(wait_for_booking)
   {
@@ -96,7 +121,8 @@ void loop()
 
   int counter_password_entries = 0;
   bool wait_for_user_input = true;
-    while(wait_for_user_input)
+
+  while(wait_for_user_input)
   {
     char custom_key = customKeypad.getKey();
     bool password_correct = false;
@@ -110,10 +136,11 @@ void loop()
         if(password_correct)
         {
           lcd.print("Password correct");
-          open_locker();
           delay(200);
           lcd.clear();
+
           open_locker();
+
           lcd.print("Get your item");
           delay(200);
           wait_for_user_input = false;
@@ -135,7 +162,7 @@ void loop()
             lcd.clear();
             lcd.print("Password wrong to many times");
             delay(300);
-            wait_for_user_input=false;
+            wait_for_user_input = false;
           }
           
         }
@@ -147,5 +174,5 @@ void loop()
       }
     }
   }
-    delay(200);
+    delay(200); 
 }

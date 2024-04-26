@@ -1,5 +1,12 @@
 #include <Wire.h>
 
+
+//WIFI SECTION
+#include <WiFiNINA.h>
+char ssid[] = "LorimIpsum";
+char wifi_password[] = "lockerHardware";
+
+
 //LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
@@ -43,10 +50,38 @@ const int SENSOR_MOTOR_PIN = 10;
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
 
+void wifi_setup()
+{
+  while (!Serial) 
+  {
+        ; // Wait for serial port to connect
+  }
+
+    // Attempt to connect to WiFi network
+  Serial.print("Attempting to connect to WiFi network: ");
+  Serial.println(ssid);
+
+  while (WiFi.begin(ssid, wifi_password) != WL_CONNECTED)
+  {
+        Serial.print(".");
+        delay(5000);  // Retry every 5 seconds if connection fails
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
 
 void setup() 
 {
-  door_sensor_setup();
+   Serial.begin(9600);
+
+   wifi_setup();
+
+  pinMode(13, INPUT_PULLUP);
+
+  //door_sensor_setup();
   servo_motor_setup();
   pin_pad_setup();
   lcd_setup();
@@ -88,9 +123,27 @@ void open_locker()
 
 void loop() 
 {
-  /* TODO: implment it to the rest
-  int doorState = digitalRead(13); // read state
+  
+    if (WiFi.status() != WL_CONNECTED) {
+        lcd.print("WiFi connection lost. Reconnecting...");
+        while (WiFi.begin(ssid, wifi_password) != WL_CONNECTED) {
+            lcd.print(".");
+            delay(5000);  // Retry every 5 seconds if connection fails
+        }
+        lcd.print("WiFi reconnected");
+  }
 
+
+/*
+    servo.write(90);
+    delay(2400);
+    servo.write(0);
+    delay(2400);
+
+
+while(true)
+{
+  int doorState = digitalRead(13); // read state
   if (doorState == HIGH) {
     lcd.clear();
     lcd.print("The door is open");
@@ -100,8 +153,8 @@ void loop()
     lcd.print("The door is closed");
     delay(100);
   }
-  */
-
+}
+  
   bool wait_for_booking = true;
   while(wait_for_booking)
   {
@@ -175,4 +228,5 @@ void loop()
     }
   }
     delay(200); 
+    */
 }

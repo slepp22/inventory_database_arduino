@@ -1,5 +1,9 @@
 #include <Wire.h>
+#include <ArduinoJson.h>
 
+
+char server[] = "HERE GOES API SERVER"; // Cat Facts API server
+int port = 443;                  // Port for HTTPS (443 for HTTPS)
 
 //WIFI SECTION
 #include <WiFiNINA.h>
@@ -75,9 +79,9 @@ void wifi_setup()
 
 void setup() 
 {
-   Serial.begin(9600);
+  Serial.begin(9600);
 
-   wifi_setup();
+  wifi_setup();
 
   pinMode(13, INPUT_PULLUP);
 
@@ -120,9 +124,47 @@ void open_locker()
   servo.write(180);
 }
 
+void api_call()
+{
+   // Make HTTPS GET request to Cat Facts API
+  Serial.println("Making API call to Cat Facts...");
+
+  WiFiClient client;
+
+  if (client.connect(server, port)) {
+    // Send HTTPS request to retrieve a random cat fact
+    client.println("GET /fact HTTP/1.1");
+    client.print("Host: ");
+    client.println(server);
+    client.println("Connection: close");
+    client.println();
+
+    
+  // Wait for server response
+    while (client.connected() || client.available()) {
+      if (client.available()) {
+        // Read response (the fact) and print to Serial Monitor
+        String line = client.readStringUntil('\n');
+        Serial.println(line); // Print raw JSON response for debugging
+      }
+    }
+
+    // Close connection
+    client.stop();
+    Serial.println("API call completed.");
+
+  } else {
+    Serial.println("Failed to connect to API server.");
+  }
+
+  delay(60000); // Delay for 1 minute before making another API call
+}
+
 
 void loop() 
 {
+
+  api_call();
   
     if (WiFi.status() != WL_CONNECTED) {
         lcd.print("WiFi connection lost. Reconnecting...");

@@ -1,14 +1,19 @@
 #include <Wire.h>
 #include <ArduinoJson.h>
 
-
-char server[] = "HERE GOES API SERVER"; // Cat Facts API server
-int port = 443;                  // Port for HTTPS (443 for HTTPS)
-
 //WIFI SECTION
 #include <WiFiNINA.h>
-char ssid[] = "LorimIpsum";
-char wifi_password[] = "lockerHardware";
+char ssid[] = "";
+char wifi_password[] = "";
+int status = WL_IDLE_STATUS; // WiFi status
+
+
+WiFiClient client;
+const char* server = "f-itplfo6nya-uc.a.run.app";
+const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTTPS)
+
+
+
 
 
 //LCD SECTION
@@ -53,6 +58,40 @@ const int DOOR_SENSOR_PIN = 13;
 const int SENSOR_MOTOR_PIN = 10;
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
+void api_call()
+{
+  if (client.connectSSL("f-itplfo6nya-uc.a.run.app", 443)) { // Use port 443 for HTTPS
+      Serial.println("Connected to server");
+
+      // Send HTTP GET request
+      client.println("GET /pin HTTP/1.1");
+      client.println("Host: f-itplfo6nya-uc.a.run.app");
+      client.println("Connection: close");
+      client.println();
+
+      // Wait for response and print response body
+      bool bodyStarted = false;
+      while (client.connected()) {
+        if (client.available()) {
+          char c = client.read();
+          if (bodyStarted) {
+            Serial.print(c); // Print response body content
+          } else if (c == '\r' || c == '\n') {
+            // Empty line indicates start of response body
+            bodyStarted = true;
+          }
+        }
+      }
+
+      // Close connection
+      client.stop();
+      Serial.println("\nAPI call completed.");
+    } else {
+      Serial.println("Connection to server failed");
+    }
+    delay(10000);
+}
+
 
 void wifi_setup()
 {
@@ -70,7 +109,6 @@ void wifi_setup()
         Serial.print(".");
         delay(5000);  // Retry every 5 seconds if connection fails
   }
-
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
@@ -124,40 +162,16 @@ void open_locker()
   servo.write(180);
 }
 
-void api_call()
+
+void reconnect_wifi()
 {
-   // Make HTTPS GET request to Cat Facts API
-  Serial.println("Making API call to Cat Facts...");
+  lcd.print("WiFi connection lost. Reconnecting...");
 
-  WiFiClient client;
-
-  if (client.connect(server, port)) {
-    // Send HTTPS request to retrieve a random cat fact
-    client.println("GET /fact HTTP/1.1");
-    client.print("Host: ");
-    client.println(server);
-    client.println("Connection: close");
-    client.println();
-
-    
-  // Wait for server response
-    while (client.connected() || client.available()) {
-      if (client.available()) {
-        // Read response (the fact) and print to Serial Monitor
-        String line = client.readStringUntil('\n');
-        Serial.println(line); // Print raw JSON response for debugging
-      }
-    }
-
-    // Close connection
-    client.stop();
-    Serial.println("API call completed.");
-
-  } else {
-    Serial.println("Failed to connect to API server.");
+  while (WiFi.begin(ssid, wifi_password) != WL_CONNECTED)
+  {
+   lcd.print(".");
+   delay(5000);  // Retry every 5 seconds if connection fails
   }
-
-  delay(60000); // Delay for 1 minute before making another API call
 }
 
 
@@ -165,15 +179,14 @@ void loop()
 {
 
   api_call();
+
+  delay(500);
   
-    if (WiFi.status() != WL_CONNECTED) {
-        lcd.print("WiFi connection lost. Reconnecting...");
-        while (WiFi.begin(ssid, wifi_password) != WL_CONNECTED) {
-            lcd.print(".");
-            delay(5000);  // Retry every 5 seconds if connection fails
-        }
+    if (WiFi.status() != WL_CONNECTED)
+    {
+       reconnect_wifi();
         lcd.print("WiFi reconnected");
-  }
+    }
 
 
 /*

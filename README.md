@@ -24,7 +24,7 @@ The other repository can be found here :
 - Servo Motor for opening lock
 - Door sensor, to check door state
 - Display LCD, 16x2, with backlight, to communicate with user
-- //TODO : Plug
+- Arduino Power Meter to see current wattage
 
 ## Installation
 
@@ -34,16 +34,18 @@ The other repository can be found here :
 2. Install libaries used in project
    - Servo by Michael Margolis, Arduino 1.2.1 (Servo Motor)
    - Grove - LCD RGB Backlight by Seeed Studio 1.0.0 (Display LCD)
+   - ArduinoJson by Benoit Blanchon 7.0.4
+   - WifiNINA by Arduino 1.8.14
    - Keypad by Mark Stanley, Alexander Brevig 3.1.1 (Keypad)
 3. Setup Arduino (Arduino UNO WiFi Rev.2)
     //TODO add electronics here
 
 ## Usage
-
-
-
+At the top of the code you have to add your wifi and password, which is needed to connect to the backend, to get a pin code.
 ```python
-# Code example or usage scenario
+char ssid[] = "YOUR WIFI NAME";
+char wifi_password[] = "YOURWIFIPASSWORD";
+
 ```
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeIBbxDL8IrOPwuaB3jFH2bx_lcdh7UUzGndN6Kd6m&s" alt="Alt text" style="width: 300px;" align="left">
 <!-- Insert a blank line here -->

@@ -1,5 +1,6 @@
 # Inventory Database Part : Arduino
-<img src="https://github.com/slepp22/inventory_database_arduino/blob/main/logo.png?raw=true" align="right" alt="Logo" width="30%" />
+<img src="https://github.com/slepp22/inventory_database_arduino/blob/main/logo.png?raw=true" alt="Logo" width="30%" />
+
 
 This project is a collaboration between Centria and Hochschule Darmstadt to develop a Locker/Renting/Charging System for universities. This repository contains the Arduino part, responsible for controlling the lockers. The Arduino communic
 

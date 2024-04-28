@@ -13,9 +13,6 @@ const char* server = "f-itplfo6nya-uc.a.run.app";
 const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTTPS)
 
 
-
-
-
 //LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
@@ -189,7 +186,7 @@ void loop()
     }
 
 
-/*
+/* TODO all the components work, we need to patch them together during this week
     servo.write(90);
     delay(2400);
     servo.write(0);

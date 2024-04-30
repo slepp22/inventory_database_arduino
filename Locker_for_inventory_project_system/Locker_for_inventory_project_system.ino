@@ -7,14 +7,11 @@ char wifi_password[] = "lockerHardware";
 int status = WL_IDLE_STATUS; // WiFi status
 
 
+
 WiFiClient client;
 const char* server = "f-itplfo6nya-uc.a.run.app";
 const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTTPS)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915
 //LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
@@ -46,6 +43,18 @@ String input_password ="";
 
 byte rowPins[ROWS] = {9, 8, 7, 6}; 
 byte colPins[COLS] = {5, 4, 3, 2}; 
+
+//CURRENTSENSOR SECTION
+//https://www.aeq-web.com/arduino-current-sensor-power-electricity-meter/
+
+int current_sensor_scaling_factor = 7;
+int voltage = 220; //Voltage of Power Grid
+int CURRENT_SENSOR_PIN = A0;
+
+float current_sensor_value = 0;
+float current = 0;
+
+
 
 //DOOR SENSOR
 //https://arduinogetstarted.com/tutorials/arduino-door-sensor
@@ -184,6 +193,27 @@ void close_locker()
   servo.write(0);
 }
 
+void get_current_sensor_value()
+{
+  int i = 0;
+  current_sensor_value = 0;
+  int times_sensor_read = 2000;
+  
+  while(i < times_read_sensor){
+    int tmp_sensor_value = analogRead(CURRENT_SENSOR_PIN);
+    current_sensor_value = current_sensor_value + tmp_sensor_value;
+    i++;
+  }
+
+  current = ((current_sensor_value/times_sensor_read)*current_sensor_scaling_factor)/100); 
+
+  Serial.print("Current: ");
+  Serial.print(current);
+  Serial.print(" A Watts: ");
+  Serial.print(current*voltage);
+  Serial.print("\n");
+}
+
 
 void reconnect_wifi()
 {
@@ -205,44 +235,7 @@ void check_wifi_connection(){
 }
 
 void loop() 
-<<<<<<< HEAD
 { 
-=======
-{
-
-  api_call();
-
-  delay(500);
-  
-    if (WiFi.status() != WL_CONNECTED)
-    {
-       reconnect_wifi();
-        lcd.print("WiFi reconnected");
-    }
-
-
-/* TODO all the components work, we need to patch them together during this week
-    servo.write(90);
-    delay(2400);
-    servo.write(0);
-    delay(2400);
-
-
-while(true)
-{
-  int doorState = digitalRead(13); // read state
-  if (doorState == HIGH) {
-    lcd.clear();
-    lcd.print("The door is open");
-    delay(100);
-  } else {
-    lcd.clear();
-    lcd.print("The door is closed");
-    delay(100);
-  }
-}
-  
->>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915
   bool wait_for_booking = true;
   while(wait_for_booking)
   {
@@ -320,7 +313,6 @@ while(true)
       }
     }
   }
-<<<<<<< HEAD
   
   
   bool door_is_unlocked = true;
@@ -342,8 +334,3 @@ while(true)
     }
   }
 }
-=======
-    delay(200); 
-    */
-}
->>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915

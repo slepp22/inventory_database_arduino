@@ -42,12 +42,22 @@ The other repository can be found here :
     //TODO add electronics here
 
 ## Usage
-At the top of the code you have to add your wifi and password, which is needed to connect to the backend, to get a pin code.
+In the Wifi Section of the code you have to add your wifi and password, which is needed to connect to the backend, to get a pin code.
 ```python
-char ssid[] = "YOUR WIFI NAME";
-char wifi_password[] = "YOURWIFIPASSWORD";
-
+//WIFI SECTION
+#include <WiFiNINA.h>
+char ssid[] = "LorimIpsum";
+char wifi_password[] = "lockerHardware";
 ```
+
+In the Currentsensor Section of the code you have to set the voltage value, which provided in your country.
+If you unsure about the voltage value you can check here : https://www.rei.com/learn/expert-advice/world-electricity-guide.html#:~:text=World%20Voltages,%2D127V%20or%20220%2D240V.
+```python
+//CURRENTSENSOR SECTION
+
+int voltage = 220; //Voltage of Power Grid
+```
+
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeIBbxDL8IrOPwuaB3jFH2bx_lcdh7UUzGndN6Kd6m&s" alt="Alt text" style="width: 300px;" align="left">
 <!-- Insert a blank line here -->
 <img src="https://www.tha.de/Binaries/Binary19462/Logo-Centria.webp" alt="Alt text" style="width: 300px;" align="center">

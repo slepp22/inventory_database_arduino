@@ -27,7 +27,7 @@ The other repository can be found here :
 - Display LCD, 16x2, with backlight, to communicate with user
 - Arduino Power Meter to see current wattage
 - Data of Wattage is visualized with ThingSpeak https://thingspeak.com/channels/2530450
-  <img src="  https://de.mathworks.com/help/thingspeak/collectagriculturaldataoverthethingsnetworktsexample_11_de.png" align = right alt="Logo" width="30%" />
+  <img src="https://de.mathworks.com/help/thingspeak/collectagriculturaldataoverthethingsnetworktsexample_11_de.png" align = right alt="Logo" width="30%" />
 ## Installation
 
 1. Install Arduino IDE 

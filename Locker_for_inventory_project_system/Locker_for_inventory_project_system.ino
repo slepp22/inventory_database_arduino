@@ -16,8 +16,8 @@ const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTT
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
 
-const int colorR = 255;
-const int colorG = 0;
+const int colorR = 0;
+const int colorG = 255;
 const int colorB = 0;
 
 //SERVO MOTOR SECTION
@@ -49,6 +49,7 @@ byte colPins[COLS] = {5, 4, 3, 2};
 
 int current_sensor_scaling_factor = 7;
 int voltage = 220; //Voltage of Power Grid
+
 int CURRENT_SENSOR_PIN = A0;
 
 float current_sensor_value = 0;
@@ -199,13 +200,13 @@ void get_current_sensor_value()
   current_sensor_value = 0;
   int times_sensor_read = 2000;
   
-  while(i < times_read_sensor){
+  while(i < times_sensor_read){
     int tmp_sensor_value = analogRead(CURRENT_SENSOR_PIN);
     current_sensor_value = current_sensor_value + tmp_sensor_value;
     i++;
   }
 
-  current = ((current_sensor_value/times_sensor_read)*current_sensor_scaling_factor)/100); 
+  current = (((current_sensor_value/times_sensor_read)*current_sensor_scaling_factor)/100); 
 
   Serial.print("Current: ");
   Serial.print(current);
@@ -213,6 +214,8 @@ void get_current_sensor_value()
   Serial.print(current*voltage);
   Serial.print("\n");
 }
+
+
 
 
 void reconnect_wifi()

@@ -1,20 +1,15 @@
 #include <Wire.h>
-#include <ArduinoJson.h>
 
 //WIFI SECTION
 #include <WiFiNINA.h>
-char ssid[] = "";
-char wifi_password[] = "";
+char ssid[] = "LorimIpsum";
+char wifi_password[] = "lockerHardware";
 int status = WL_IDLE_STATUS; // WiFi status
 
 
 WiFiClient client;
 const char* server = "f-itplfo6nya-uc.a.run.app";
 const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTTPS)
-
-
-
-
 
 //LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
@@ -42,7 +37,7 @@ char hexaKeys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-String password = "123";
+String password = "";
 String input_password ="";
 
 byte rowPins[ROWS] = {9, 8, 7, 6}; 
@@ -58,39 +53,60 @@ const int DOOR_SENSOR_PIN = 13;
 const int SENSOR_MOTOR_PIN = 10;
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
-void api_call()
-{
-  if (client.connectSSL("f-itplfo6nya-uc.a.run.app", 443)) { // Use port 443 for HTTPS
-      Serial.println("Connected to server");
 
-      // Send HTTP GET request
-      client.println("GET /pin HTTP/1.1");
-      client.println("Host: f-itplfo6nya-uc.a.run.app");
-      client.println("Connection: close");
-      client.println();
+String api_call(String endpoint) {
+  if (client.connectSSL("f-itplfo6nya-uc.a.run.app", 443)) {
+    Serial.println("Connected to server");
 
-      // Wait for response and print response body
-      bool bodyStarted = false;
-      while (client.connected()) {
-        if (client.available()) {
-          char c = client.read();
-          if (bodyStarted) {
-            Serial.print(c); // Print response body content
-          } else if (c == '\r' || c == '\n') {
-            // Empty line indicates start of response body
-            bodyStarted = true;
-          }
+    // Send HTTP GET request with the specified endpoint
+    client.print("GET ");
+    client.print(endpoint);
+    client.println(" HTTP/1.1");
+    client.println("Host: f-itplfo6nya-uc.a.run.app");
+    client.println("Connection: close");
+    client.println();
+
+    // Variables to capture PIN value
+    bool pinFound = false;
+    String pinValue = "";
+    
+    // Wait for response and capture PIN value
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+
+        // Check for start of "pin" value
+        if (!pinFound && isDigit(c)) {
+          pinFound = true; // Start capturing pin value
+          pinValue += c;
+        } else if (pinFound && pinValue.length() < 4 && isDigit(c)) {
+          // Continue capturing digits if pin value is not complete
+          pinValue += c;
+        } else if (pinFound && pinValue.length() == 4) {
+          // Stop capturing once 4-digit pin value is complete
+          break;
         }
       }
-
-      // Close connection
-      client.stop();
-      Serial.println("\nAPI call completed.");
-    } else {
-      Serial.println("Connection to server failed");
     }
-    delay(10000);
+
+    // Close connection
+    client.stop();
+    Serial.println("\nAPI call completed.");
+
+    // Print captured PIN value
+    if (pinValue.length() == 4) {
+      Serial.print("PIN value: ");
+      Serial.println(pinValue);
+      return pinValue;
+    } else {
+      Serial.println("Failed to retrieve valid PIN value");
+    }
+  } else {
+    Serial.println("Connection to server failed");
+  }
+  delay(5000); // Delay before making the next API call (adjust as needed)
 }
+
 
 
 void wifi_setup()
@@ -121,12 +137,12 @@ void setup()
 
   wifi_setup();
 
-  pinMode(13, INPUT_PULLUP);
-
-  //door_sensor_setup();
+   pinMode(13, INPUT_PULLUP);
+ // door_sensor_setup();
   servo_motor_setup();
   pin_pad_setup();
   lcd_setup();
+  close_locker();
   delay(1000);
 }
 
@@ -149,8 +165,6 @@ void servo_motor_setup()
 
 bool get_booking()
 {
-  //TODO CALL TO BACKEND
-  
   delay(300);
   bool booking = false;
   return booking;
@@ -158,70 +172,54 @@ bool get_booking()
 
 void open_locker()
 {
-  //TODO finish implemeting
-  servo.write(180);
+  servo.write(90);
+}
+
+void close_locker()
+{
+  servo.write(0);
 }
 
 
 void reconnect_wifi()
 {
-  lcd.print("WiFi connection lost. Reconnecting...");
+  Serial.print("WiFi connection lost. Reconnecting...");
 
   while (WiFi.begin(ssid, wifi_password) != WL_CONNECTED)
   {
-   lcd.print(".");
+   Serial.print(".");
    delay(5000);  // Retry every 5 seconds if connection fails
   }
 }
 
+void check_wifi_connection(){
+  if (WiFi.status() != WL_CONNECTED){
+       reconnect_wifi();
+        Serial.print("WiFi reconnected");
+  }
+  delay(2400);
+}
 
 void loop() 
-{
-
-  api_call();
-
-  delay(500);
-  
-    if (WiFi.status() != WL_CONNECTED)
-    {
-       reconnect_wifi();
-        lcd.print("WiFi reconnected");
-    }
-
-
-/*
-    servo.write(90);
-    delay(2400);
-    servo.write(0);
-    delay(2400);
-
-
-while(true)
-{
-  int doorState = digitalRead(13); // read state
-  if (doorState == HIGH) {
-    lcd.clear();
-    lcd.print("The door is open");
-    delay(100);
-  } else {
-    lcd.clear();
-    lcd.print("The door is closed");
-    delay(100);
-  }
-}
-  
+{ 
   bool wait_for_booking = true;
   while(wait_for_booking)
   {
+    check_wifi_connection();
+
     lcd.setCursor(0, 0);
-    // print the number of seconds since reset:
     lcd.clear();
-    lcd.print("Waiting for booking");
-    wait_for_booking = get_booking();
+    lcd.print("Wait for booking");
+
+    password = api_call("/pin");
+    Serial.print(password);
+    
+    if(password != ""){
+      wait_for_booking = false;
+    }
     delay(300);
   }
-
-
+ 
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Enter password");
@@ -250,7 +248,7 @@ while(true)
           open_locker();
 
           lcd.print("Get your item");
-          delay(200);
+          delay(300);
           wait_for_user_input = false;
         }
         else if(!password_correct)
@@ -272,7 +270,6 @@ while(true)
             delay(300);
             wait_for_user_input = false;
           }
-          
         }
       }
       if(custom_key != '*')
@@ -282,6 +279,24 @@ while(true)
       }
     }
   }
-    delay(200); 
-    */
+  
+  
+  bool door_is_unlocked = true;
+
+  while(door_is_unlocked)
+  {
+    int doorState = digitalRead(13); // read state
+
+    if (doorState == HIGH) {
+      lcd.clear();
+      lcd.print("Please close the door");
+      delay(3000);
+    } else {
+      close_locker();
+      door_is_unlocked = false;
+      lcd.clear();
+      lcd.print("Thank you!");
+      delay(3000);
+    }
+  }
 }

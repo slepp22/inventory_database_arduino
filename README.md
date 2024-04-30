@@ -58,6 +58,15 @@ If you unsure about the voltage value you can check here : https://www.rei.com/l
 int voltage = 220; //Voltage of Power Grid
 ```
 
+If you want to use your own ThinkSpeak Channel, create one here: https://thingspeak.com/
+and modify the ThingSpeak Section in the code.
+```python
+//THINGSPEAK SECTION
+#include "ThingSpeak.h"
+unsigned long smart_room_channel_number = 1337; // ThingSpeak Channel Number
+const char * write_API_KEY = "YOUR_API_KEY"; //ThingSpeak Write API Key
+```
+
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeIBbxDL8IrOPwuaB3jFH2bx_lcdh7UUzGndN6Kd6m&s" alt="Alt text" style="width: 300px;" align="left">
 <!-- Insert a blank line here -->
 <img src="https://www.tha.de/Binaries/Binary19462/Logo-Centria.webp" alt="Alt text" style="width: 300px;" align="center">

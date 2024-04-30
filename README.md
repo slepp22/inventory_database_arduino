@@ -26,7 +26,8 @@ The other repository can be found here :
 - Door sensor, to check door state
 - Display LCD, 16x2, with backlight, to communicate with user
 - Arduino Power Meter to see current wattage
-
+- Data of Wattage is visualized with ThingSpeak https://thingspeak.com/channels/2530450/private_show
+  <img src="  https://de.mathworks.com/help/thingspeak/collectagriculturaldataoverthethingsnetworktsexample_11_de.png" align = right alt="Logo" width="30%" />
 ## Installation
 
 1. Install Arduino IDE 
@@ -50,11 +51,10 @@ char ssid[] = "LorimIpsum";
 char wifi_password[] = "lockerHardware";
 ```
 
-In the Currentsensor Section of the code you have to set the voltage value, which provided in your country.
-If you unsure about the voltage value you can check here : https://www.rei.com/learn/expert-advice/world-electricity-guide.html#:~:text=World%20Voltages,%2D127V%20or%20220%2D240V.
+In the Current Sensor Section of the code you have to set the voltage value, which is provided in your country.
+If you unsure about the voltage value you can check here : https://www.rei.com/learn/expert-advice/world-electricity-guide.html#:~:text=Plugs%20and%20Electrical%20Information
 ```python
-//CURRENTSENSOR SECTION
-
+//CURRENT SENSOR SECTION
 int voltage = 220; //Voltage of Power Grid
 ```
 

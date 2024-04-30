@@ -58,7 +58,7 @@ If you unsure about the voltage value you can check here : https://www.rei.com/l
 int voltage = 220; //Voltage of Power Grid
 ```
 
-If you want to use your own ThinkSpeak Channel, create one here: https://thingspeak.com/
+If you want to use your own ThingSpeak Channel, create one here: https://thingspeak.com/
 and modify the ThingSpeak Section in the code.
 ```python
 //THINGSPEAK SECTION

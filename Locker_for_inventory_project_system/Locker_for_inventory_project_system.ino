@@ -11,6 +11,10 @@ WiFiClient client;
 const char* server = "f-itplfo6nya-uc.a.run.app";
 const int port = 443; // HTTPS port               // Port for HTTPS (443 for HTTPS)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915
 //LCD SECTION
 //https://wiki.seeedstudio.com/Grove-LCD_RGB_Backlight/
 #include "rgb_lcd.h"
@@ -201,7 +205,44 @@ void check_wifi_connection(){
 }
 
 void loop() 
+<<<<<<< HEAD
 { 
+=======
+{
+
+  api_call();
+
+  delay(500);
+  
+    if (WiFi.status() != WL_CONNECTED)
+    {
+       reconnect_wifi();
+        lcd.print("WiFi reconnected");
+    }
+
+
+/* TODO all the components work, we need to patch them together during this week
+    servo.write(90);
+    delay(2400);
+    servo.write(0);
+    delay(2400);
+
+
+while(true)
+{
+  int doorState = digitalRead(13); // read state
+  if (doorState == HIGH) {
+    lcd.clear();
+    lcd.print("The door is open");
+    delay(100);
+  } else {
+    lcd.clear();
+    lcd.print("The door is closed");
+    delay(100);
+  }
+}
+  
+>>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915
   bool wait_for_booking = true;
   while(wait_for_booking)
   {
@@ -279,6 +320,7 @@ void loop()
       }
     }
   }
+<<<<<<< HEAD
   
   
   bool door_is_unlocked = true;
@@ -300,3 +342,8 @@ void loop()
     }
   }
 }
+=======
+    delay(200); 
+    */
+}
+>>>>>>> 2060be0b9c93d4240c7b2b38e39fc60601591915

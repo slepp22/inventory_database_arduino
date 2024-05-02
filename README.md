@@ -46,9 +46,8 @@ The other repository can be found here :
    <img src="https://raw.githubusercontent.com/slepp22/inventory_database_arduino/main/arduino_fritzing_curcuit.png" alt="Logo" width="70%" />
   
 4. 3D-model made with TinkerCad
-   - Servo by Michael Margolis, Arduino 1.2.1 (Servo Motor)
-   - Grove - LCD RGB Backlight by Seeed Studio 1.0.0 (Display LCD)
-
+   - 3D Model can be found and edited here : https://www.tinkercad.com/things/kgWDdxJz2Ao-locker-design
+    <img src="https://raw.githubusercontent.com/slepp22/inventory_database_arduino/main/example_locker.png" width = "40%">
      <img src="https://support.scooledu.org/.api2/api/v1/communities/14665887/previews/thumbnails/74a1c2df-e5e1-4408-b58f-12e278c4582a?width=680&height=680&crop=False" align = right alt="Logo" width="20%" />
 
 

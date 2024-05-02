@@ -60,7 +60,7 @@ Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS)
 //https://www.aeq-web.com/arduino-current-sensor-power-electricity-meter/
 int current_sensor_scaling_factor = 7;
 int voltage = 220;  //Voltage of Power Grid
-int CURRENT_SENSOR_PIN = A0;
+int CURRENT_SENSOR_PIN = A1;
 float current_sensor_value = 0;
 float current = 0;
 
@@ -98,85 +98,133 @@ struct CURRENT_BOOKING {
 
 CURRENT_BOOKING current_booking;
 
+void door_setup(){
+  open_locker();
+  delay(5000);
+  int doorState = digitalRead(13);
+  do{
+    doorState = digitalRead(13);
+    lcd.setCursor(0, 0);
+    lcd.clear();
+    if(doorState==HIGH)
+    {
+      lcd.print("Close door !");
+      delay(5000);
+    }
+  }while(doorState == HIGH);
+
+  close_locker();
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Door done... !");
+  delay(1000);
+}
 
 void setup() {
   Serial.begin(9600);
-  wifi_setup();
+  lcd_setup();
 
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Setup starts... !");
+  delay(5000);
+  
+
+  //SENSOR SETUP
+  servo_motor_setup();
+  pin_pad_setup();
+ 
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Setup Door... !");
+  door_setup();
+
+  //WIFI SETUP
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Setup Wifi... !");
+  wifi_setup();
   //ThingSpeak SETUP
   ThingSpeak.begin(client);
 
-  //SENSOR SETUP
-  pinMode(13, INPUT_PULLUP);
-  servo_motor_setup();
-  pin_pad_setup();
-  lcd_setup();
-  close_locker();
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.print("Setup Done!");
+
+  //close_locker();
   delay(5000);
 }
 
 void loop() {
   do {
     check_wifi_connection();
-    api_get_latest_booking();  //with this comes info like Password
+    lcd.setCursor(0, 0);
+    lcd.clear();
+    lcd.print("Check booking...");
+    api_get_latest_booking();  //with this comes info like Password  
 
     lcd.setCursor(0, 0);
     lcd.clear();
-    lcd.print("Wait for booking...");
-    delay(3000);
-
+    lcd.print("Wait for User!");
     unsigned long startTime = millis();  // Get the current time in milliseconds
     char custom_key = NO_KEY;            // Initialize custom_key to NO_KEY (no key pressed)
 
     // Loop and check for keypad input for up to 10 seconds (10000 milliseconds)
-    while (millis() - startTime < 10000) {  // Continue loop until 10 seconds have elapsed
+    while (millis() - startTime < 20000) {  // Continue loop until 10 seconds have elapsed
       custom_key = customKeypad.getKey();   // Check for keypad input
       if (custom_key == '#') {
         bool password_correct = user_pin_pad_input();
         if (password_correct) {
           open_locker();
-          delay(5000);
+          password_enter_counter += 1;
+          if(password_enter_counter == 2){
+            lcd.setCursor(0, 0);
+            lcd.clear();
+            lcd.print("Take your item");
+            api_update_booking(CURRENT_RENTER_ID); 
+            closing_door_user();
+          }
+          else {
+          delay(2000);
           lcd.setCursor(0, 0);
           lcd.clear();
-          lcd.print("Take your item");
+          lcd.print("Place your item");
           delay(5000);
-
-          int doorState = digitalRead(13);  // read state
-
-          do {
-            doorState = digitalRead(13);  // read state
-
-            if (doorState == HIGH) {  //High == open
-              lcd.setCursor(0, 0);
-              lcd.clear();
-              lcd.print("Close door");
-              delay(5000);
-            } else if (doorState == LOW)  //Low == closed
-            {
-              close_locker();
-              lcd.setCursor(0, 0);
-              lcd.clear();
-              lcd.print("Thank you");
-              delay(5000);
-            }
-          } while (doorState == HIGH);
+          closing_door_user();
+          }  
         } else if (!password_correct) {
-          const char* message = "Password wrong too many times";
-          scrollText(message);
+          lcd.setCursor(0, 0);
+          lcd.clear();
+          lcd.print("wrong 3/3");
         }
       }
     }
-
     //ONLY SEND, WHEN CHARGE
     float current_watt = get_current_sensor_value();
     send_to_thingspeak(current_watt);
     delay(3000);
-
   } while (CURRENT_PASSWORD_FROM_API == PREVIOUS_PASSWORD_FROM_API);
-
-  //api_update_booking(CURRENT_RENTER_ID);
 }
 
+void closing_door_user(){
+   int doorState = digitalRead(13);  // read state
+   do {
+        doorState = digitalRead(13);  // read state
+
+        if (doorState == HIGH) {  //High == open
+          lcd.setCursor(0, 0);
+          lcd.clear();
+          lcd.print("Close door !");
+          delay(5000);
+        } else if (doorState == LOW){  //Low == closed
+          lcd.setCursor(0, 0);
+          lcd.clear();
+          lcd.print("Thank you ! ");
+          close_locker();
+          delay(5000);
+        }
+      } while (doorState == HIGH);
+}
 void wifi_setup() {
   while (!Serial) {
     ;  // Wait for serial port to connect
@@ -200,9 +248,8 @@ void api_update_booking(int bookingId) {
   DynamicJsonDocument doc(200);  // Adjust the capacity based on your JSON payload size
   doc["time_start"] = current_booking.time_start;
   doc["time_end"] = current_booking.time_end;
-
   doc["active"] = false;
-  doc["price"] = current_booking.price;
+  doc["booking_price"] = current_booking.price;
   doc["device_id"] = current_booking.device_id;
   doc["user_id"] = current_booking.user_id;
   doc["rent_charge"] = current_booking.rent_charge;
@@ -353,26 +400,6 @@ void api_get_latest_booking() {
   delay(5000);  // Delay before sending the next request
 }
 
-void scrollText(const char* text) {
-  int scrollDelay = 150;
-  int scrollPosition = 16;  // Initialize to LCD width (e.g., 16 for a 16x2 LCD)
-
-  lcd.clear();
-  lcd.setCursor(scrollPosition, 0);
-  lcd.print(text);
-
-  // Move to the next position for scrolling
-  scrollPosition--;
-
-  // Reset position if entire text has scrolled off the screen
-  if (scrollPosition < -strlen(text) * 6) {  // Assuming 6 is the character width on your LCD
-    scrollPosition = 16;                     // LCD width
-    delay(1000);                             // Pause at end of scrolling (adjust as needed)
-  }
-
-  delay(scrollDelay);  // Adjust scrolling speed
-}
-
 bool user_pin_pad_input() {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -483,7 +510,7 @@ float get_current_sensor_value() {
   Serial.print(" A Watts: ");
   Serial.print(current * voltage);
   Serial.print("\n");
-  return current * voltage;
+  return current*voltage;
 }
 
 void reconnect_wifi() {

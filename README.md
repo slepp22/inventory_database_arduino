@@ -40,7 +40,9 @@ The other repository can be found here :
    - WifiNINA by Arduino 1.8.14
    - Keypad by Mark Stanley, Alexander Brevig 3.1.1 (Keypad)
 3. Setup Arduino (Arduino UNO WiFi Rev.2)
-    //TODO add electronics here
+<img src="https://github.com/slepp22/inventory_database_arduino/blob/main/logo.png?raw=true" alt="Logo" width="30%" />
+
+    
 
 ## Usage
 In the Wifi Section of the code you have to add your wifi and password, which is needed to connect to the backend, to get a pin code.

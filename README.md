@@ -39,10 +39,18 @@ The other repository can be found here :
    - ArduinoJson by Benoit Blanchon 7.0.4
    - WifiNINA by Arduino 1.8.14
    - Keypad by Mark Stanley, Alexander Brevig 3.1.1 (Keypad)
+   - ThingSpeak by MathWorks 2.0.1
 3. Setup Arduino (Arduino UNO WiFi Rev.2)
-<img src="https://github.com/slepp22/inventory_database_arduino/blob/main/logo.png?raw=true" alt="Logo" width="30%" />
+   - in the repository you can also find the schematic view of the electric curcuit
 
-    
+   <img src="https://raw.githubusercontent.com/slepp22/inventory_database_arduino/main/arduino_fritzing_curcuit.png" alt="Logo" width="70%" />
+  
+4. 3D-model made with TinkerCad
+   - Servo by Michael Margolis, Arduino 1.2.1 (Servo Motor)
+   - Grove - LCD RGB Backlight by Seeed Studio 1.0.0 (Display LCD)
+
+     <img src="https://support.scooledu.org/.api2/api/v1/communities/14665887/previews/thumbnails/74a1c2df-e5e1-4408-b58f-12e278c4582a?width=680&height=680&crop=False" align = right alt="Logo" width="20%" />
+
 
 ## Usage
 In the Wifi Section of the code you have to add your wifi and password, which is needed to connect to the backend, to get a pin code.
@@ -54,13 +62,17 @@ char wifi_password[] = "lockerHardware";
 ```
 
 In the Current Sensor Section of the code you have to set the voltage value, which is provided in your country.
-If you unsure about the voltage value you can check here : https://www.rei.com/learn/expert-advice/world-electricity-guide.html#:~:text=Plugs%20and%20Electrical%20Information
+If you unsure about the voltage value you can check here :
+
+
+https://www.rei.com/learn/expert-advice/world-electricity-guide.html#:~:text=Plugs%20and%20Electrical%20Information
 ```python
 //CURRENT SENSOR SECTION
 int voltage = 220; //Voltage of Power Grid
 ```
 
-If you want to use your own ThingSpeak Channel, create one here: https://thingspeak.com/
+If you want to use your own ThingSpeak Channel, create one here: 
+https://thingspeak.com/
 and modify the ThingSpeak Section in the code.
 ```python
 //THINGSPEAK SECTION

@@ -133,7 +133,7 @@ void setup() {
   //SENSOR SETUP
   servo_motor_setup();
   pin_pad_setup();
- 
+  pinMode(13, INPUT_PULLUP);
   lcd.setCursor(0, 0);
   lcd.clear();
   lcd.print("Setup Door... !");
@@ -225,6 +225,7 @@ void closing_door_user(){
         }
       } while (doorState == HIGH);
 }
+
 void wifi_setup() {
   while (!Serial) {
     ;  // Wait for serial port to connect
@@ -485,7 +486,7 @@ bool get_booking() {
 }
 
 void open_locker() {
-  servo.write(90);
+  servo.write(98);
 }
 
 void close_locker() {
